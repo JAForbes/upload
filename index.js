@@ -15,7 +15,7 @@ const rateLimit = handler => require('micro-ratelimit')({
 }, handler)
 
 
-module.exports = rateLimit( cors(async (req, res) => {
+module.exports = rateLimit( cors(async (req) => {
 	const body = await json(req)
 
 	if( !body.filename || typeof body.filename !== 'string' ) {
@@ -26,6 +26,6 @@ module.exports = rateLimit( cors(async (req, res) => {
 		throw error
 	}
     
-    return 'http://pretend-signed-url.com/wow'
+    return { url: 'http://pretend-signed-url.com/wow' }
 
 }))
