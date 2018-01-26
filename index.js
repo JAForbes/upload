@@ -21,9 +21,9 @@ const rateLimit = handler => require('micro-ratelimit')({
 
 
 module.exports = rateLimit( cors(async (req) => {
-	const body = await json(req)
+	const { filename } = await json(req)
 
-	if( !body.filename || typeof body.filename !== 'string' ) {
+	if( !filename ) {
 		const error = new Error(
 			'An filename parameter was expected.'
 		)
