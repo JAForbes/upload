@@ -9,7 +9,7 @@ const cors = require('micro-cors')({
 const aws = require('aws-sdk')
 
 const S3 = new aws.S3({ 
-    region: process.env.BUCKET_REGION || 'us-west-2' 
+    region: process.env.BUCKET_REGION || 'ap-southeast-2' 
 })
 
 
