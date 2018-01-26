@@ -25,9 +25,7 @@ module.exports = rateLimit( cors(async (req, res) => {
 		error.statusCode = 400
 		throw error
 	}
-
     
-    res.send('http://pretend-signed-url.com/wow')
+    return 'http://pretend-signed-url.com/wow'
 
-  	res.end()
 }))
