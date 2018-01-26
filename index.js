@@ -31,11 +31,14 @@ module.exports = rateLimit( cors(async (req) => {
 		throw error
     }
     
-    const url = S3.getSignedUrl(
-        'putObject', 
-        { Bucket: 'uploads.harth.io'
-        , Key: filename 
-        }
+    const url = await new Promise( (Y,N) => 
+        S3.getSignedUrl(
+            'putObject', 
+            { Bucket: 'uploads.harth.io'
+            , Key: filename 
+            }
+            , (err, data) => err ? N(err) : Y(data)
+        )
     )
     
     return { url }
