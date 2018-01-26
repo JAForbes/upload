@@ -6,7 +6,12 @@ const cors = require('micro-cors')({
 	allowedMethods: ['POST']
 })
 
-// require('dotenv').config()
+const aws = require('aws-sdk')
+
+const S3 = new aws.S3({ 
+    region: process.env.BUCKET_REGION || 'us-west-2' 
+})
+
 
 const rateLimit = handler => require('micro-ratelimit')({
 	window: 1000 * 60
@@ -24,8 +29,16 @@ module.exports = rateLimit( cors(async (req) => {
 		)
 		error.statusCode = 400
 		throw error
-	}
+    }
     
-    return { url: 'http://pretend-signed-url.com/wow' }
+    const url = await S3.getSignedUrl(
+        'putObject', 
+        { Bucket: 'uploads.harth.io'
+        , Key: filename 
+        }
+    )
+    .promise()
+    
+    return { url }
 
 }))
