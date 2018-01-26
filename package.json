@@ -1,0 +1,29 @@
+{
+  "name": "harth-upload-services",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "micro -p $PORT",
+    "deploy": "now --public --alias"
+  },
+  "author": "james.a.forbes@gmail.com <=> (http://james-forbes.com)",
+  "license": "MIT",
+  "now": {
+    "alias": "harth-upload-services",
+    "dotenv": true,
+    "files": [
+      "index.js"
+    ]
+  },
+  "dependencies": {
+    "aws-sdk": "^2.187.0",
+    "micro": "^9.1.0",
+    "micro-cors": "^0.1.0",
+    "micro-ratelimit": "^0.3.0"
+  },
+  "devDependencies": {
+    "now": "^9.2.7"
+  }
+}
