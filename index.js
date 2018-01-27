@@ -1,8 +1,6 @@
 /* eslint-disable fp/no-mutation, fp/no-throw */
 
-const { json, send } = require('micro')
-const fs = require('fs')
-const path = require('path')
+const { json } = require('micro')
 
 const cors = require('micro-cors')({
 	allowedMethods: ['POST']
@@ -47,12 +45,6 @@ async function putFile(req){
     return { url }
 }
 
-const html = fs.readFileSync(__dirname + '/ui/index.html')
-
-async function getComponent(req, res){
-    res.end(html)
-}
-
 async function getFile(){
     return {
         status: 'processing'
@@ -69,11 +61,7 @@ module.exports = rateLimit( cors(async (req, res) => {
     
     return (
         req.method == 'GET'
-            ? req.url == '/'
-                ? getComponent(req, res)
-            : req.url.startsWith('/file/')
-                ? getFile(req, res)
-                : unknown(req, res)
+            ? getFile(req, res)
         : req.method == 'PUT'
             ? putFile(req, res)
             : unknown(req, res)
