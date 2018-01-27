@@ -6,19 +6,6 @@ const {
 const dont = i => i
 const endpoint = 'https://harth-upload-services.herokuapp.com'
 
-const preview = uploadState => 
-    uploadState.case == 'Inactive'
-        ? m('div.bg-black-20.dib.ma0.w-100.h5'
-            ,'Drop Zone'
-        ) 
-        : m('div.bg-black-20.dib.ma0.w-100.h5', {
-            style: {
-                background: 
-                    `url(${uploadState.value.preview}) no-repeat center center`
-                ,backgroundSize: 'cover'
-            }
-        })
-
 const DefineSumType = o => 
     Object.keys(o)
         .map( k => [k, o[k]] )
@@ -245,9 +232,18 @@ function App(){
         ,m('input[type=file].pa3.bg-black-20', {
           onchange
           ,accept: 'image/*'
+          ,name: 'uploader'
         })
-        , preview( uploadState )
-
+        , m('label.bg-black-20.dib.ma0.w-100.h5', {
+            style: {
+                for: 'uploader'
+                ,background: 
+                    uploadState.case == 'Inactive'
+                    ? ''
+                    : `url(${uploadState.value.preview}) no-repeat center center`
+                ,backgroundSize: 'cover'
+            }
+        })
         ,m('button.dib.h3.tc', 
           { onclick
           , disabled: 
