@@ -184,10 +184,12 @@ function App(){
                         )
                     } else {
                         uploadState = UploadState.Failed(
-                            new Error(
-                                evt.target.responseXML
-                                    .querySelector('Message').innerHTML
-                            )  
+                            Object.assign({}, uploadState.value, {
+                                error: new Error(
+                                    evt.target.responseXML
+                                        .querySelector('Message').innerHTML
+                                )
+                            })
                         )
                     }
     
