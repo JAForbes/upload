@@ -138,6 +138,7 @@ function App(){
             , data: 
                 { filename: uploadState.value.file.name
                 , filetype: uploadState.value.file.type
+                , filesize: uploadState.value.file.size
                 }
             }
         )

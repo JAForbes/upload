@@ -37,6 +37,7 @@ async function createSignedURL(req){
             { Bucket: 'uploads.harth.io'
             , Key: filename 
             , ContentType: filetype
+            , ContentLength: filesize
             }
             , (err, data) => err ? N(err) : Y(data)
         )
