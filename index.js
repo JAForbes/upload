@@ -25,7 +25,7 @@ async function putFile(req){
 
 	if( !filename ) {
 		const error = new Error(
-			'An filename parameter was expected.'
+			'A filename parameter was expected.'
 		)
 		error.statusCode = 400
 		throw error
@@ -45,9 +45,20 @@ async function putFile(req){
     return { url }
 }
 
-async function getFile(){
+async function getFile(req){
+    const { file_id } = await json(req)
+
+    if( !file_id ) {
+		const error = new Error(
+			'A file_id parameter was expected.'
+		)
+		error.statusCode = 400
+		throw error
+    }
+
     return {
-        status: 'processing'
+        status: Math.random() > 0.5 ? 'processing' : 'processed'
+        ,file_id
     }
 }
 
