@@ -4,6 +4,7 @@ const {
 } = window // eslint-disable-line no-undef
 
 const dont = i => i
+const endpoint = 'https://harth-upload-services.herokuapp.com'
 
 const preview = uploadState => 
     uploadState.case == 'Inactive'
@@ -133,7 +134,7 @@ function App(){
 
         const { url } = await m.request(
             { method: 'POST'
-            , url: 'https://harth-upload-services.herokuapp.com'
+            , url: endpoint
             , data: 
                 { filename: uploadState.value.file.name
                 , filetype: uploadState.value.file.type
@@ -182,6 +183,25 @@ function App(){
                                 progress: 0
                             }, uploadState.value)
                         )
+
+                        async function poller(){
+                            const res = await m.request({
+                                method: 'GET'
+                                , url: endpoint
+                                , data: { file_id: uploadState.value.id }
+                            })
+
+                            if( res.status == 'processing' ){
+                                setTimeout(poller, 1000)
+                            } else {
+                                uploadState = UploadState.Processed(
+                                    Object.assign({}, uploadState.value, {
+                                        url: '/whatever/file.jpg'
+                                    })
+                                )
+                            }
+                        }
+                        
                     } else {
                         uploadState = UploadState.Failed(
                             Object.assign({}, uploadState.value, {

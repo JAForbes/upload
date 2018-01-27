@@ -46,7 +46,9 @@ async function createSignedURL(req){
 }
 
 async function getFile(req){
-    const { file_id } = await json(req)
+    
+    const { file_id } = require('url').parse(req.message.url, true)
+        .query
 
     if( !file_id ) {
 		const error = new Error(
