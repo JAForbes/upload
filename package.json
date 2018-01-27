@@ -15,7 +15,5 @@
     "micro-cors": "^0.1.0",
     "micro-ratelimit": "^0.3.0"
   },
-  "devDependencies": {
-    "now": "^9.2.7"
-  }
+  "devDependencies": {}
 }
