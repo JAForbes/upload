@@ -10,13 +10,6 @@
   },
   "author": "james.a.forbes@gmail.com <=> (http://james-forbes.com)",
   "license": "MIT",
-  "now": {
-    "alias": "harth-upload-services",
-    "dotenv": true,
-    "files": [
-      "index.js"
-    ]
-  },
   "dependencies": {
     "aws-sdk": "^2.187.0",
     "micro": "^9.1.0",
