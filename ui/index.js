@@ -81,60 +81,63 @@ function App(){
   async function onclick(){
     
     try {
-      uploadState[0] = UploadState.Signing()
+        uploadState[0] = UploadState.Signing()
 
-      const signedURL = await m.request({
-        method: 'POST'
-        ,url: 'https://harth-upload-services.herokuapp.com'
-        ,data: {
-          filename: file[0].name
-        }
-      })
-
-      const formData = 
-        [ ['key', file[0].name ]
-        , ['file', file[0] ]
-        ]
-        .reduce(
-          tap(
-            (fd, kv) => 
-              fd.append(...kv)
-          )
-          ,new FormData()
+        const { url } = await m.request(
+            { method: 'POST'
+            , url: 'https://harth-upload-services.herokuapp.com'
+            , data: 
+                { filename: file[0].name
+                , filetype: file[0].type
+                }
+            }
         )
 
-      function uploadProgress(e){
-        uploadState[0] = UploadState.Uploading(
-          Math.floor(e.loaded * 100 / e.total)
-        )  
-        m.redraw()
-      }
+      const response = await fetch(url, {
+          method: 'PUT'
+          ,body: file
+      })
+      .catch( e => e )
+    //   const response = await m.request({
+    //     method: 'PUT'
+    //     ,url
+    //     ,headers: {
+    //         'Content-Type': 'multipart/form-data'
+    //     }
+    //     ,data: file
+    //   })
+    //   .catch( e => e )
 
-      function uploadComplete(evt) {
-        if (evt.target.responseText == "") {
-          uploadState[0] = UploadState.Success()
-        } else {
-          uploadState[0] = UploadState.Failed(
-            new Error( 
-                evt.target.responseXML
-                    .querySelector('Message').innerHTML
-            )  
-          )
-        }
-        m.redraw()
-      }
-      
-      function uploadFailed(err){
-        throw err
-      }
+      console.log(response)
 
-      var xhr = new XMLHttpRequest();
-      xhr.upload.addEventListener("progress", uploadProgress, false);
-      xhr.addEventListener("load", uploadComplete, false);
-      xhr.addEventListener("error", uploadFailed, false);
-      xhr.open('PUT', signedURL.url);
-      xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
-      xhr.send(formData);  
+
+    //   function uploadProgress(e){
+    //     uploadState[0] = UploadState.Uploading(
+    //       Math.floor(e.loaded * 100 / e.total)
+    //     )  
+    //     m.redraw()
+    //   }
+
+    //   function uploadComplete(evt) {
+    //     if (evt.target.responseText == "") {
+    //       uploadState[0] = UploadState.Success()
+    //     } else {
+    //       uploadState[0] = UploadState.Failed(
+    //         new Error( 
+    //             evt.target.responseXML
+    //                 .querySelector('Message').innerHTML
+    //         )  
+    //       )
+    //     }
+    //     m.redraw()
+    //   }
+
+    //   var xhr = new XMLHttpRequest();
+    //   xhr.upload.addEventListener("progress", uploadProgress, false);
+    //   xhr.addEventListener("load", uploadComplete, false);
+    //   xhr.open('PUT', signedURL.url);
+    //   xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
+    //   xhr.send(formData);  
     } catch (e) {
       uploadState[0] = UploadState.Failed( e ) 
       m.redraw()

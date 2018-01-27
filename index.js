@@ -21,7 +21,7 @@ const rateLimit = handler => require('micro-ratelimit')({
 
 
 module.exports = rateLimit( cors(async (req) => {
-	const { filename } = await json(req)
+	const { filename, filetype } = await json(req)
 
 	if( !filename ) {
 		const error = new Error(
@@ -30,12 +30,13 @@ module.exports = rateLimit( cors(async (req) => {
 		error.statusCode = 400
 		throw error
     }
-    
+
     const url = await new Promise( (Y,N) => 
         S3.getSignedUrl(
             'putObject', 
             { Bucket: 'uploads.harth.io'
             , Key: filename 
+            , ContentType: filetype
             }
             , (err, data) => err ? N(err) : Y(data)
         )
