@@ -244,6 +244,7 @@ function App(){
       return m('.app.helvetica'
         ,m('input[type=file].pa3.bg-black-20', {
           onchange
+          ,accept: 'image/*'
         })
         , preview( uploadState )
 
