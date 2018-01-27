@@ -71,9 +71,7 @@ async function unknown(){
 }
 
 module.exports = rateLimit( cors(async (req, res) => {
-    
-    console.log( req.method )
-    
+
     return (
         req.method == 'GET'
             ? getFile(req, res)
