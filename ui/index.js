@@ -87,21 +87,18 @@ function App(){
         method: 'POST'
         ,url: 'https://harth-upload-services.herokuapp.com'
         ,data: {
-          filename: imageURL[0]
+          filename: file[0].name
         }
       })
 
       const formData = 
-        [ ['key', imageURL[0] ]
+        [ ['key', file[0].name ]
         , ['file', file[0] ]
         ]
         .reduce(
           tap(
-            (fd, kv) => {
-              console.log('typeof fd', typeof fd)
-              console.log('fd', fd)
+            (fd, kv) => 
               fd.append(...kv)
-            }
           )
           ,new FormData()
         )
@@ -118,24 +115,24 @@ function App(){
           uploadState[0] = UploadState.Success()
         } else {
           uploadState[0] = UploadState.Failed(
-            new Error( evt.target.responseText )  
+            new Error( 
+                evt.target.responseXML
+                    .querySelector('Message').innerHTML
+            )  
           )
         }
         m.redraw()
       }
       
       function uploadFailed(err){
-        uploadState[0] = UploadState.Failed(
-          err
-        )
-        m.redraw()
+        throw err
       }
 
       var xhr = new XMLHttpRequest();
       xhr.upload.addEventListener("progress", uploadProgress, false);
       xhr.addEventListener("load", uploadComplete, false);
       xhr.addEventListener("error", uploadFailed, false);
-      xhr.open('POST', signedURL.url);
+      xhr.open('PUT', signedURL.url);
       xhr.setRequestHeader('Access-Control-Allow-Origin', '*');
       xhr.send(formData);  
     } catch (e) {
@@ -165,7 +162,8 @@ function App(){
           }
           , uploadState.map(buttonText).pop()
         )
-        ,m('.dib.tc.bg-black-20.black-60'
+        ,m('.tc.dib.bg-black-20.black-60.h3.overflow-y-auto.pa1'
+            +'.flex.justify-center.items-center'
            , uploadState.map( uploadStatusMessage ).pop()
         )
       )
