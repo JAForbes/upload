@@ -1,6 +1,8 @@
 /* eslint-disable fp/no-mutation, fp/no-throw */
 
 const { json } = require('micro')
+const fs = require('fs')
+const path = require('path')
 
 const cors = require('micro-cors')({
 	allowedMethods: ['POST']
@@ -20,8 +22,8 @@ const rateLimit = handler => require('micro-ratelimit')({
 }, handler)
 
 
-module.exports = rateLimit( cors(async (req) => {
-	const { filename, filetype } = await json(req)
+async function putFile(req){
+    const { filename, filetype } = await json(req)
 
 	if( !filename ) {
 		const error = new Error(
@@ -43,5 +45,35 @@ module.exports = rateLimit( cors(async (req) => {
     )
     
     return { url }
+}
 
+async function getComponent(){
+    return fs.createReadStream( path.resolve( __dirname, './ui/index.html') )
+}
+
+async function getFile(){
+    return {
+        status: 'processing'
+    }
+}
+
+async function unknown(req){
+    const error = new Error('Unknown request format')
+    error.status = '403'
+    throw error
+}
+
+module.exports = rateLimit( cors(async (req) => {
+    
+    return (
+        req.method == 'GET'
+            ? req.url == '/'
+                ? getComponent(req)
+            : req.url.startsWith('/file/')
+                ? getFile(req)
+                : unknown(req)
+        : req.method == 'PUT'
+            ? putFile(req)
+            : unknown(req)
+    )
 }))
