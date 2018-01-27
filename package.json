@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "micro -p $PORT",
+    "start": "micro service -p $PORT",
     "deploy": "now --public --alias"
   },
   "author": "james.a.forbes@gmail.com <=> (http://james-forbes.com)",

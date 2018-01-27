@@ -1,80 +1,238 @@
-/* eslint-disable fp/no-mutation, fp/no-throw */
+const {
+    m
+    , URL
+} = window // eslint-disable-line no-undef
 
-const { json } = require('micro')
+const dont = i => i
 
-const cors = require('micro-cors')({
-	allowedMethods: ['POST']
-})
-
-const aws = require('aws-sdk')
-
-const S3 = new aws.S3({ 
-    region: process.env.BUCKET_REGION || 'ap-southeast-2' 
-})
-
-
-const rateLimit = handler => require('micro-ratelimit')({
-	window: 1000
-	, limit: 2 // 2 a second per client
-	, headers: true
-}, handler)
-
-
-async function putFile(req){
-    const { filename, filetype } = await json(req)
-
-	if( !filename ) {
-		const error = new Error(
-			'A filename parameter was expected.'
-		)
-		error.statusCode = 400
-		throw error
-    }
-
-    const url = await new Promise( (Y,N) => 
-        S3.getSignedUrl(
-            'putObject', 
-            { Bucket: 'uploads.harth.io'
-            , Key: filename 
-            , ContentType: filetype
+const preview = uploadState => 
+    uploadState.case == 'Inactive'
+        ? m('div.bg-black-20.dib.ma0.w-100.h5'
+            ,'Drop Zone'
+        ) 
+        : m('div.bg-black-20.dib.ma0.w-100.h5', {
+            style: {
+                background: 
+                    `url(${uploadState.value.preview}) no-repeat center center`
+                ,backgroundSize: 'cover'
             }
-            , (err, data) => err ? N(err) : Y(data)
+        })
+
+const DefineSumType = o => 
+    Object.keys(o)
+        .map( k => [k, o[k]] )
+        .reduce(
+            (p, [ k, ks ]) => {
+
+                const of = value => {
+
+                    const badValue =
+                        ks.length > 0
+                        && (
+                            value == null
+                            || typeof value != 'object'
+                        )
+
+                    if ( badValue ){
+                        throw new TypeError(
+                            k +' expects {'+ks.join(', ')+'} but received: ' 
+                                + value
+                        )
+                    }
+
+                    const missingValues = 
+                        ks.filter(
+                            k => !(k in value)
+                        )
+
+                    if( missingValues.length ){
+                        throw new TypeError(
+                            k + ' is missing expected values: '
+                                + missingValues.join(',')
+                        )
+                    }
+
+                    return { 
+                        case: k
+                        , value
+                    }
+                }
+
+                p[k] = of
+
+                return p
+            }
+            ,{
+                cata: cases => o => 
+                    cases[o.case]( o.value )
+            }
         )
-    )
+
+const UploadState = DefineSumType({
+    Inactive: 
+        []
+    ,Unconfirmed: 
+        ['file', 'id', 'preview']
+    ,Signing: 
+        ['file', 'id', 'preview']
+    ,Uploading: 
+        ['progress', 'id', 'file', 'preview']
+    ,Failed: 
+        ['error', 'id', 'file', 'preview']
+    ,Processing: 
+        ['file', 'id', 'progress', 'preview']
+    ,Processed: 
+        ['file', 'id', 'url', 'preview']
+})
+
+// UploadState -> Boolean
+const buttonDisabled = UploadState.cata({
+  Inactive: () => true
+  ,Unconfirmed: () => false
+  ,Processing: () => true
+  ,Processed: () => true
+  ,Failed: () => false
+  ,Uploading: () => true
+  ,Signing: () => true
+})
+
+// UploadState -> HyperScript
+const uploadStatusMessage = UploadState.cata({
+  Inactive: () => 'Waiting for file input.'
+  ,Unconfirmed: () => 'Upload when ready.'
+  ,Processing: () => 'File is being processed'
+  ,Processed: () => 'File uploaded.  Upload more?'
+  ,Failed: ({error}) => m('span.red',error.message)
+  ,Uploading: ({progress}) => progress+'% Uploaded'
+  ,Signing: () => 'Signing ...'
+})
+  
+
+
+// UploadState -> HyperScript
+const buttonText = UploadState.cata({
+  Inactive: () => 'Upload'
+  ,Unconfirmed: () => 'Upload'
+  ,Processing: () => 'Upload'
+  ,Processed: () => 'Upload'
+  ,Failed: () => 'Try Again'
+  ,Uploading: () => 'Upload'
+  ,Signing: () => 'Upload'
+})
+
+function App(){
+  
+  
+  let uploadState = 
+    UploadState.Inactive()
+  
+  async function onclick(){
     
-    return { url }
-}
+    try {
+        uploadState = UploadState.Signing(uploadState.value)
 
-async function getFile(req){
-    const { file_id } = await json(req)
+        const { url } = await m.request(
+            { method: 'POST'
+            , url: 'https://harth-upload-services.herokuapp.com'
+            , data: 
+                { filename: uploadState.value.file.name
+                , filetype: uploadState.value.file.type
+                }
+            }
+        )
 
-    if( !file_id ) {
-		const error = new Error(
-			'A file_id parameter was expected.'
-		)
-		error.statusCode = 400
-		throw error
-    }
+        await m.request({
+            url
+            ,method: 'PUT'
+            ,data: uploadState.value.file
+            ,headers: 
+                { 'Content-Type': uploadState.value.file.type
+                }
+            ,serialize: dont
+            ,config(xhr){
+                xhr.upload.addEventListener(
+                    'progress'
+                    , uploadProgress
+                    , false
+                )
 
-    return {
-        status: Math.random() > 0.5 ? 'processing' : 'processed'
-        ,file_id
-    }
-}
+                xhr.addEventListener(
+                    'load'
+                    , uploadComplete
+                    , false
+                )
 
-async function unknown(){
-    const error = new Error('Unknown request format')
-    error.status = '403'
-    throw error
-}
+                function uploadProgress(e){
 
-module.exports = rateLimit( cors(async (req, res) => {
+                    uploadState = UploadState.Uploading(
+                        Object.assign(
+                            {}, uploadState.value, {
+                                progress: Math.floor(e.loaded * 100 / e.total)
+                            }
+                        )
+                    ) 
+                
+                    m.redraw()
+                }
+
+                function uploadComplete(evt) {
+                    if (evt.target.responseText == "") {
+                        uploadState = UploadState.Processing(
+                            Object.assign({
+                                progress: 0
+                            }, uploadState.value)
+                        )
+                    } else {
+                        uploadState = UploadState.Failed(
+                            new Error(
+                                evt.target.responseXML
+                                    .querySelector('Message').innerHTML
+                            )  
+                        )
+                    }
     
-    return (
-        req.method == 'GET'
-            ? getFile(req, res)
-        : req.method == 'PUT'
-            ? putFile(req, res)
-            : unknown(req, res)
-    )
-}))
+                    m.redraw()
+                }
+
+            }
+        })
+    } catch (e) {
+      uploadState = UploadState.Failed( e ) 
+      m.redraw()
+    }
+  }
+  
+  function onchange(e){
+    uploadState = UploadState.Unconfirmed({
+        id: Math.random().toString(15).slice(2)
+        ,file: e.currentTarget.files[0]
+        ,preview: URL.createObjectURL(e.currentTarget.files[0])
+    })
+  }
+  
+  return {
+    view(){
+      return m('.app.helvetica'
+        ,m('input[type=file].pa3.bg-black-20', {
+          onchange
+        })
+        , preview( uploadState )
+
+        ,m('button.dib.h3.tc', 
+          { onclick
+          , disabled: 
+                buttonDisabled( uploadState )
+          }
+          , buttonText(uploadState)
+        )
+        ,m('.tc.dib.bg-black-20.black-60.h3.overflow-y-auto.pa1'
+            +'.flex.justify-center.items-center'
+           , uploadStatusMessage(uploadState)
+        )
+      )
+      
+    }
+  }
+}
+
+m.mount( document.body, App ) // eslint-disable-line no-undef
