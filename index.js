@@ -1,6 +1,6 @@
 /* eslint-disable fp/no-mutation, fp/no-throw */
 
-const { json } = require('micro')
+const { json, send } = require('micro')
 const fs = require('fs')
 const path = require('path')
 
@@ -47,8 +47,10 @@ async function putFile(req){
     return { url }
 }
 
-async function getComponent(){
-    return fs.createReadStream( path.resolve( __dirname, './ui/index.html') )
+const html = fs.readFileSync(__dirname + '/ui/index.html')
+
+async function getComponent(req){
+    return html
 }
 
 async function getFile(){
@@ -57,23 +59,23 @@ async function getFile(){
     }
 }
 
-async function unknown(req){
+async function unknown(){
     const error = new Error('Unknown request format')
     error.status = '403'
     throw error
 }
 
-module.exports = rateLimit( cors(async (req) => {
+module.exports = rateLimit( cors(async (req, res) => {
     
     return (
         req.method == 'GET'
             ? req.url == '/'
-                ? getComponent(req)
+                ? getComponent(req, res)
             : req.url.startsWith('/file/')
-                ? getFile(req)
-                : unknown(req)
+                ? getFile(req, res)
+                : unknown(req, res)
         : req.method == 'PUT'
-            ? putFile(req)
-            : unknown(req)
+            ? putFile(req, res)
+            : unknown(req, res)
     )
 }))
