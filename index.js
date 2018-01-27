@@ -232,7 +232,15 @@ function App(){
         ,m('input[type=file].pa3.bg-black-20', {
           onchange
           ,accept: 'image/*'
-          ,name: 'uploader'
+          ,id: 'uploader'
+          ,style: 
+            { width: '0.1px'
+            , height: '0.1px'
+            , opacity: 0
+            , overflow: 'hidden'
+            , position: 'absolute'
+            , zIndex: -1
+            }
         })
         , m('label.bg-black-20.dib.ma0.w-100.h5', {
             style: {
