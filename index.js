@@ -14,8 +14,8 @@ const S3 = new aws.S3({
 
 
 const rateLimit = handler => require('micro-ratelimit')({
-	window: 1000 * 60
-	, limit: 2 // 2 a minute per client
+	window: 1000
+	, limit: 2 // 2 a second per client
 	, headers: true
 }, handler)
 
