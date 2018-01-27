@@ -243,9 +243,9 @@ function App(){
             }
         })
         , m('label.bg-black-20.dib.ma0.w-100.h5', {
-            style: {
-                for: 'uploader'
-                ,background: 
+            for: 'uploader'
+            ,style: {
+                background: 
                     uploadState.case == 'Inactive'
                     ? ''
                     : `url(${uploadState.value.preview}) no-repeat center center`
