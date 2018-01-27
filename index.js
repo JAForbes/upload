@@ -49,8 +49,8 @@ async function putFile(req){
 
 const html = fs.readFileSync(__dirname + '/ui/index.html')
 
-async function getComponent(req){
-    return html
+async function getComponent(req, res){
+    res.end(html)
 }
 
 async function getFile(){
