@@ -20,7 +20,7 @@ const rateLimit = handler => require('micro-ratelimit')({
 }, handler)
 
 
-async function putFile(req){
+async function createSignedURL(req){
     const { filename, filetype } = await json(req)
 
 	if( !filename ) {
@@ -73,8 +73,8 @@ module.exports = rateLimit( cors(async (req, res) => {
     return (
         req.method == 'GET'
             ? getFile(req, res)
-        : req.method == 'PUT'
-            ? putFile(req, res)
+        : req.method == 'POST'
+            ? createSignedURL(req, res)
             : unknown(req, res)
     )
 }))
