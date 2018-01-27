@@ -199,7 +199,11 @@ function App(){
             }
         })
     } catch (e) {
-      uploadState = UploadState.Failed( e ) 
+      uploadState = UploadState.Failed(
+        Object.assign({}, uploadState.value, {
+            error: e
+        })
+      ) 
       m.redraw()
     }
   }
