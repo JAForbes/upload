@@ -47,7 +47,7 @@ async function createSignedURL(req){
 
 async function getFile(req){
     
-    const { file_id } = require('url').parse(req.message.url, true)
+    const { file_id } = require('url').parse(req.url, true)
         .query
 
     if( !file_id ) {
