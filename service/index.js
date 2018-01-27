@@ -21,7 +21,7 @@ const rateLimit = handler => require('micro-ratelimit')({
 
 
 async function createSignedURL(req){
-    const { filename, filetype } = await json(req)
+    const { filename, filetype, filesize } = await json(req)
 
 	if( !filename ) {
 		const error = new Error(
