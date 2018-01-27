@@ -201,6 +201,8 @@ function App(){
                                 )
                             }
                         }
+
+                        setTimeout(poller, 500)
                         
                     } else {
                         uploadState = UploadState.Failed(
