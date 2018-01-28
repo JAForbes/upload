@@ -251,6 +251,8 @@ function App(){
                             }
                             e.preventDefault()
                             e.stopImmediatePropagation()
+
+                            return p
                         }
                     },
                     { onchange
