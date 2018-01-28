@@ -226,13 +226,15 @@ function App(){
   }
   
   function onchange(e){
+    const file =
+        ( e.currentTarget.files 
+        || e.dataTransfer.files
+        )[0]
+
     uploadState = UploadState.Unconfirmed({
         id: Math.random().toString(15).slice(2)
-        ,file: (
-            e.currentTarget.files 
-            || e.dataTransfer.files
-        )[0]
-        ,preview: URL.createObjectURL(e.currentTarget.files[0])
+        ,file
+        ,preview: URL.createObjectURL(file)
     })
   }
   
