@@ -22,7 +22,7 @@ const getPolicy = ({ filename, filetype }) => policyGen({
     ,secret: process.env.AWS_SECRET_ACCESS_KEY
     ,date: Date.now()
     ,policy:
-        { expiration: Date.now() * 60 * 1000 * 5
+        { expiration: Date.now() + 60 * 1000 * 5
         , conditions: 
             [ ["starts-with", "$key", ""]
             , ["starts-with", "$Content-Type", ""]
