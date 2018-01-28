@@ -258,7 +258,7 @@ function App(){
         )
         ,[{
             className:
-                'bg-black-20 dib ma0 w-100 h5'
+                'bg-black-20 dib ma0 w-100 h5 dim'
         }]
         .map(
             ({ className }) => m('label'
@@ -276,7 +276,7 @@ function App(){
                                         .includes(k) 
                                 ){
                                     e.currentTarget.className = 
-                                        className + ' dim'
+                                        className + ' o-20'
                                 } else if (
                                     'ondragleaveondragendondrop'
                                         .includes(k)
