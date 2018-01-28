@@ -136,6 +136,7 @@ function App(){
                 k => fd.append(k, policyResponse.fields[k])
             )
 
+        fd.set('file', uploadState.value.file)
         fd.set('key', uploadState.value.file.name)
         fd.set('Content-Type', uploadState.value.file.type)
             
