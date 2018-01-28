@@ -266,6 +266,12 @@ function App(){
                         if( k == 'ondrop' ){
                             onchange(e)
                         }
+                        if ( 'ondragoverondragenter'.includes(k) ){
+                            e.currentTarget.className + ' dim'
+                        } else if ('ondragleaveondragendondrop'.includes(k)){
+                            e.currentTarget.className = 
+                                e.currentTarget.className.replace('dim', '')
+                        }
                         e.preventDefault()
                         e.stopImmediatePropagation()
 
