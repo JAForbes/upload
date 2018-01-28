@@ -138,15 +138,12 @@ function App(){
 
         fd.set('file', uploadState.value.file)
         fd.set('key', uploadState.value.file.name)
-        // fd.set('Content-Type', uploadState.value.file.type)
+        fd.set('content-type', uploadState.value.file.type)
             
         await m.request({
             url: policyResponse.host.replace('.dualstack','')
             ,method: 'POST'
             ,data: fd
-            ,headers: {
-                'Content-Type': uploadState.value.file.type
-            }
             ,config(xhr){
                 xhr.upload.addEventListener(
                     'progress'
