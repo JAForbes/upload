@@ -230,7 +230,7 @@ function App(){
         id: Math.random().toString(15).slice(2)
         ,file: (
             e.currentTarget.files 
-            || e.originalEvent.dataTransfer.files
+            || e.dataTransfer.files
         )[0]
         ,preview: URL.createObjectURL(e.currentTarget.files[0])
     })
