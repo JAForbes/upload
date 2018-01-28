@@ -1,6 +1,7 @@
 const {
     m
     , URL
+    , FormData
 } = window // eslint-disable-line no-undef
 
 const endpoint = 'https://harth-upload-services.herokuapp.com'
@@ -139,7 +140,7 @@ function App(){
         fd.set('file', uploadState.value.file)
         fd.set('key', uploadState.value.file.name)
         fd.set('content-type', uploadState.value.file.type)
-            
+        
         await m.request({
             url: policyResponse.host.replace('.dualstack','')
             ,method: 'POST'
@@ -227,7 +228,10 @@ function App(){
   function onchange(e){
     uploadState = UploadState.Unconfirmed({
         id: Math.random().toString(15).slice(2)
-        ,file: e.currentTarget.files[0]
+        ,file: (
+            e.currentTarget.files 
+            || e.originalEvent.dataTransfer.files
+        )[0]
         ,preview: URL.createObjectURL(e.currentTarget.files[0])
     })
   }
@@ -235,19 +239,34 @@ function App(){
   return {
     view(){
       return m('.app.helvetica'
-        ,m('input[type=file].pa3.bg-black-20', {
-          onchange
-          ,accept: 'image/*'
-          ,id: 'uploader'
-          ,style: 
-            { width: '0.1px'
-            , height: '0.1px'
-            , opacity: 0
-            , overflow: 'hidden'
-            , position: 'absolute'
-            , zIndex: -1
-            }
-        })
+        ,m('input[type=file].pa3.bg-black-20'
+            ,['','start','end','over','enter','leave']
+                .split(' ')
+                .map( k => 'ondrag'+k )
+                .concat( 'ondrop' )
+                .reduce(
+                    (p,k) => {
+                        p[k] = e => {
+                            if( k == 'drop' ){
+                                onchange(e)
+                            }
+                            e.preventDefault()
+                            e.stopImmediatePropagation()
+                        }
+                    },
+                    { onchange
+                    , accept: 'image/*'
+                    , id: 'uploader'
+                    , style: 
+                        { width: '0.1px'
+                        , height: '0.1px'
+                        , opacity: 0
+                        , overflow: 'hidden'
+                        , position: 'absolute'
+                        , zIndex: -1
+                        }
+                    }
+                ))
         , m('label.bg-black-20.dib.ma0.w-100.h5', {
             for: 'uploader'
             ,style: {

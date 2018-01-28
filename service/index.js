@@ -7,13 +7,7 @@ const cors = require('micro-cors')({
 	allowedMethods: ['POST']
 })
 
-const aws = require('aws-sdk')
-
 const policyGen = require('s3-post-policy')
-
-const S3 = new aws.S3({ 
-    region: process.env.BUCKET_REGION || 'ap-southeast-2' 
-})
 
 const getPolicy = ({ filename, filetype }) => policyGen({
     id: process.env.AWS_ACCESS_KEY_ID
@@ -30,40 +24,13 @@ const getPolicy = ({ filename, filetype }) => policyGen({
             , {"acl": "private"}
             ] 
         }
-})
-    
+})    
 
 const rateLimit = handler => require('micro-ratelimit')({
 	window: 1000
 	, limit: 2 // 2 a second per client
 	, headers: true
 }, handler)
-
-
-async function createSignedURL(req){
-    const { filename, filetype } = await json(req)
-
-	if( !filename ) {
-		const error = new Error(
-			'A filename parameter was expected.'
-		)
-		error.statusCode = 400
-		throw error
-    }
-
-    const url = await new Promise( (Y,N) => 
-        S3.getSignedUrl(
-            'putObject', 
-            { Bucket: 'uploads-harth-io'
-            , Key: filename 
-            , ContentType: filetype
-            }
-            , (err, data) => err ? N(err) : Y(data)
-        )
-    )
-    
-    return { url }
-}
 
 async function createPostPolicy(req){
     const { filename, filetype } = await json(req)
