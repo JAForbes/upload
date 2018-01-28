@@ -3,7 +3,6 @@ const {
     , URL
 } = window // eslint-disable-line no-undef
 
-const dont = i => i
 const endpoint = 'https://harth-upload-services.herokuapp.com'
 
 const DefineSumType = o => 

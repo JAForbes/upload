@@ -20,10 +20,10 @@ const getPolicy = ({ filename, filetype }) => policyGen({
     ,region: 'ap-southeast-2'
     ,bucket: 'uploads.harth.io'
     ,secret: process.env.AWS_SECRET_ACCESS_KEY
-    ,expiration: Date.now() * 60 * 1000 * 5
+    ,date: Date.now()
     ,policy:
-        { "expiration": "2009-01-01T00:00:00Z"
-        , "conditions": 
+        { expiration: Date.now() * 60 * 1000 * 5
+        , conditions: 
             [ ["starts-with", "$key", ""]
             , ["starts-with", "$Content-Type", ""]
             , ["content-length-range", 0, 5 * 1024 * 1024 ] 
