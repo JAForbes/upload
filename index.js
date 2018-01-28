@@ -240,45 +240,48 @@ function App(){
     view(){
       return m('.app.helvetica'
         ,m('input[type=file].pa3.bg-black-20'
-            ,['','start','end','over','enter','leave']
-                .map( k => 'ondrag'+k )
-                .concat( 'ondrop' )
-                .reduce(
-                    (p,k) => {
-                        p[k] = e => {
-                            if( k == 'drop' ){
-                                onchange(e)
-                            }
-                            e.preventDefault()
-                            e.stopImmediatePropagation()
-
-                        }
-                        return p
-                    },
-                    { onchange
-                    , accept: 'image/*'
-                    , id: 'uploader'
-                    , style: 
-                        { width: '0.1px'
-                        , height: '0.1px'
-                        , opacity: 0
-                        , overflow: 'hidden'
-                        , position: 'absolute'
-                        , zIndex: -1
-                        }
-                    }
-                ))
-        , m('label.bg-black-20.dib.ma0.w-100.h5', {
-            for: 'uploader'
-            ,style: {
-                background: 
-                    uploadState.case == 'Inactive'
-                    ? ''
-                    : `url(${uploadState.value.preview}) no-repeat center center`
-                ,backgroundSize: 'cover'
-                ,cursor: 'pointer'
+           
+            ,{ onchange
+            , accept: 'image/*'
+            , id: 'uploader'
+            , style: 
+                { width: '0.1px'
+                , height: '0.1px'
+                , opacity: 0
+                , overflow: 'hidden'
+                , position: 'absolute'
+                , zIndex: -1
+                }
             }
-        })
+        )
+        , m('label.bg-black-20.dib.ma0.w-100.h5'
+            ,['','start','end','over','enter','leave']
+            .map( k => 'ondrag'+k )
+            .concat( 'ondrop' )
+            .reduce(
+                (p,k) => {
+                    p[k] = e => {
+                        if( k == 'drop' ){
+                            onchange(e)
+                        }
+                        e.preventDefault()
+                        e.stopImmediatePropagation()
+
+                    }
+                    return p
+                }
+                ,{
+                    for: 'uploader'
+                    ,style: {
+                        background: 
+                            uploadState.case == 'Inactive'
+                            ? ''
+                            : `url(${uploadState.value.preview}) no-repeat center center`
+                        ,backgroundSize: 'cover'
+                        ,cursor: 'pointer'
+                    }
+                }
+        ))
         ,m('button.dib.h3.tc', 
           { onclick
           , disabled: 
