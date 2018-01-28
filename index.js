@@ -140,7 +140,7 @@ function App(){
         fd.set('Content-Type', uploadState.value.file.type)
             
         await m.request({
-            url: policyResponse.host
+            url: policyResponse.host.replace('.dualstack','')
             ,method: 'POST'
             ,data: fd
             ,config(xhr){
