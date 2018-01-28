@@ -281,7 +281,9 @@ function App(){
                                     'ondragleaveondragendondrop'
                                         .includes(k)
                                 ){
-                                    e.currentTarget.className = className
+                                    e.currentTarget.className = 
+                                        className 
+                                            + ' dim'
                                 }
                                 e.preventDefault()
                                 e.stopImmediatePropagation()
