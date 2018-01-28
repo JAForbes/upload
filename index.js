@@ -252,8 +252,8 @@ function App(){
                             e.preventDefault()
                             e.stopImmediatePropagation()
 
-                            return p
                         }
+                        return p
                     },
                     { onchange
                     , accept: 'image/*'
