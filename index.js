@@ -267,7 +267,8 @@ function App(){
                             onchange(e)
                         }
                         if ( 'ondragoverondragenter'.includes(k) ){
-                            e.currentTarget.className + ' dim'
+                            e.currentTarget.className = 
+                                e.currentTarget.className + ' dim'
                         } else if ('ondragleaveondragendondrop'.includes(k)){
                             e.currentTarget.className = 
                                 e.currentTarget.className.replace('dim', '')
