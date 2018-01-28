@@ -241,7 +241,6 @@ function App(){
       return m('.app.helvetica'
         ,m('input[type=file].pa3.bg-black-20'
             ,['','start','end','over','enter','leave']
-                .split(' ')
                 .map( k => 'ondrag'+k )
                 .concat( 'ondrop' )
                 .reduce(
