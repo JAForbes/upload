@@ -250,6 +250,7 @@ function App(){
                     ? ''
                     : `url(${uploadState.value.preview}) no-repeat center center`
                 ,backgroundSize: 'cover'
+                ,cursor: 'pointer'
             }
         })
         ,m('button.dib.h3.tc', 

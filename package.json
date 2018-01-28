@@ -13,7 +13,8 @@
     "aws-sdk": "^2.187.0",
     "micro": "^9.1.0",
     "micro-cors": "^0.1.0",
-    "micro-ratelimit": "^0.3.0"
+    "micro-ratelimit": "^0.3.0",
+    "s3-post-policy": "^2.3.0"
   },
   "devDependencies": {}
 }

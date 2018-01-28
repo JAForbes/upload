@@ -21,7 +21,7 @@ const rateLimit = handler => require('micro-ratelimit')({
 
 
 async function createSignedURL(req){
-    const { filename, filetype, filesize } = await json(req)
+    const { filename, filetype } = await json(req)
 
 	if( !filename ) {
 		const error = new Error(
@@ -37,7 +37,6 @@ async function createSignedURL(req){
             { Bucket: 'uploads.harth.io'
             , Key: filename 
             , ContentType: filetype
-            , ContentLength: filesize
             }
             , (err, data) => err ? N(err) : Y(data)
         )
