@@ -261,7 +261,7 @@ function App(){
             .reduce(
                 (p,k) => {
                     p[k] = e => {
-                        if( k == 'drop' ){
+                        if( k == 'ondrop' ){
                             onchange(e)
                         }
                         e.preventDefault()
