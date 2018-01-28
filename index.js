@@ -256,41 +256,55 @@ function App(){
                 }
             }
         )
-        , m('label.bg-black-20.dib.ma0.w-100.h5'
-            ,['','start','end','over','enter','leave']
-            .map( k => 'ondrag'+k )
-            .concat( 'ondrop' )
-            .reduce(
-                (p,k) => {
-                    p[k] = e => {
-                        if( k == 'ondrop' ){
-                            onchange(e)
+        ,[{
+            className:
+                'bg-black-20 dib ma0 w-100 h5'
+        }]
+        .map(
+            ({ className }) => m('label'
+                ,['','start','end','over','enter','leave']
+                    .map( k => 'ondrag'+k )
+                    .concat( 'ondrop' )
+                    .reduce(
+                        (p,k) => {
+                            p[k] = e => {
+                                if( k == 'ondrop' ){
+                                    onchange(e)
+                                }
+                                if ( 
+                                    'ondragoverondragenter'
+                                        .includes(k) 
+                                ){
+                                    e.currentTarget.className = 
+                                        className + ' dim'
+                                } else if (
+                                    'ondragleaveondragendondrop'
+                                        .includes(k)
+                                ){
+                                    e.currentTarget.className = className
+                                }
+                                e.preventDefault()
+                                e.stopImmediatePropagation()
+        
+                            }
+                            return p
                         }
-                        if ( 'ondragoverondragenter'.includes(k) ){
-                            e.currentTarget.className = 
-                                e.currentTarget.className + ' dim'
-                        } else if ('ondragleaveondragendondrop'.includes(k)){
-                            e.currentTarget.className = 
-                                e.currentTarget.className.replace('dim', '')
+                        ,{
+                            for: 'uploader'
+                            ,style: {
+                                background: 
+                                    uploadState.case == 'Inactive'
+                                    ? ''
+                                    : `url(${uploadState.value.preview})`
+                                        +`no-repeat center center`
+                                ,backgroundSize: 'cover'
+                                ,cursor: 'pointer'
+                            }
                         }
-                        e.preventDefault()
-                        e.stopImmediatePropagation()
-
-                    }
-                    return p
-                }
-                ,{
-                    for: 'uploader'
-                    ,style: {
-                        background: 
-                            uploadState.case == 'Inactive'
-                            ? ''
-                            : `url(${uploadState.value.preview}) no-repeat center center`
-                        ,backgroundSize: 'cover'
-                        ,cursor: 'pointer'
-                    }
-                }
-        ))
+                )
+            )
+        )
+        [0]
         ,m('button.dib.h3.tc', 
           { onclick
           , disabled: 
