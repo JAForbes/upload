@@ -1,3 +1,4 @@
+/* globals Promise */
 /* eslint-disable fp/no-mutation, fp/no-throw */
 
 const { json } = require('micro')
@@ -8,10 +9,29 @@ const cors = require('micro-cors')({
 
 const aws = require('aws-sdk')
 
+const policyGen = require('s3-post-policy')
+
 const S3 = new aws.S3({ 
     region: process.env.BUCKET_REGION || 'ap-southeast-2' 
 })
 
+const getPolicy = ({ filename, filetype }) => policyGen({
+    id: process.env.AWS_ACCESS_KEY_ID
+    ,region: 'ap-southeast-2'
+    ,bucket: 'uploads.harth.io'
+    ,secret: process.env.AWS_SECRET_ACCESS_KEY
+    ,expiration: Date.now() * 60 * 1000 * 5
+    ,policy:
+        { "expiration": "2009-01-01T00:00:00Z"
+        , "conditions": 
+            [ ["starts-with", "$key", ""]
+            , ["starts-with", "$Content-Type", ""]
+            , ["content-length-range", 0, 5 * 1024 * 1024 ] 
+            , {"acl": "private"}
+            ] 
+        }
+})
+    
 
 const rateLimit = handler => require('micro-ratelimit')({
 	window: 1000
@@ -45,6 +65,11 @@ async function createSignedURL(req){
     return { url }
 }
 
+async function createPostPolicy(req){
+    const { filename, filetype } = await json(req)
+    return getPolicy({filename, filetype})
+}
+
 async function getFile(req){
     
     const { file_id } = require('url').parse(req.url, true)
@@ -76,7 +101,7 @@ module.exports = rateLimit( cors(async (req, res) => {
         req.method == 'GET'
             ? getFile(req, res)
         : req.method == 'POST'
-            ? createSignedURL(req, res)
+            ? createPostPolicy(req, res)
             : unknown(req, res)
     )
 }))

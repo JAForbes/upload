@@ -119,25 +119,31 @@ function App(){
     try {
         uploadState = UploadState.Signing(uploadState.value)
 
-        const { url } = await m.request(
+        const policyResponse = await m.request(
             { method: 'POST'
             , url: endpoint
             , data: 
                 { filename: uploadState.value.file.name
                 , filetype: uploadState.value.file.type
-                , filesize: uploadState.value.file.size
                 }
             }
         )
 
+        const fd = new FormData()
+
+        Object.keys(policyResponse.fields)
+            .filter( k => k.toLowerCase() == k )
+            .forEach(
+                k => fd.append(k, policyResponse.fields[k])
+            )
+
+        fd.set('key', uploadState.value.file.name)
+        fd.set('Content-Type', uploadState.value.file.type)
+            
         await m.request({
-            url
-            ,method: 'PUT'
-            ,data: uploadState.value.file
-            ,headers: 
-                { 'Content-Type': uploadState.value.file.type
-                }
-            ,serialize: dont
+            url: policyResponse.host
+            ,method: 'POST'
+            ,data: fd
             ,config(xhr){
                 xhr.upload.addEventListener(
                     'progress'
