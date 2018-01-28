@@ -300,6 +300,7 @@ function App(){
                                 ,backgroundSize: 'cover'
                                 ,cursor: 'pointer'
                             }
+                            ,className
                         }
                 )
             )
