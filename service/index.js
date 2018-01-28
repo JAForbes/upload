@@ -67,7 +67,11 @@ async function createSignedURL(req){
 
 async function createPostPolicy(req){
     const { filename, filetype } = await json(req)
-    return getPolicy({filename, filetype})
+    const {url} = await createSignedURL(req)
+    const policy = getPolicy({filename, filetype})
+        policy.host = url
+    
+    return policy
 }
 
 async function getFile(req){
