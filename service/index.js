@@ -18,7 +18,7 @@ const S3 = new aws.S3({
 const getPolicy = ({ filename, filetype }) => policyGen({
     id: process.env.AWS_ACCESS_KEY_ID
     ,region: 'ap-southeast-2'
-    ,bucket: 'uploads.harth.io'
+    ,bucket: 'uploads-harth-io'
     ,secret: process.env.AWS_SECRET_ACCESS_KEY
     ,date: Date.now()
     ,policy:
@@ -54,7 +54,7 @@ async function createSignedURL(req){
     const url = await new Promise( (Y,N) => 
         S3.getSignedUrl(
             'putObject', 
-            { Bucket: 'uploads.harth.io'
+            { Bucket: 'uploads-harth-io'
             , Key: filename 
             , ContentType: filetype
             }
@@ -67,11 +67,8 @@ async function createSignedURL(req){
 
 async function createPostPolicy(req){
     const { filename, filetype } = await json(req)
-    const {url} = await createSignedURL(req)
-    const policy = getPolicy({filename, filetype})
-        policy.host = url
-    
-    return policy
+
+    return getPolicy({filename, filetype})
 }
 
 async function getFile(req){
