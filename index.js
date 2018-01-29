@@ -7,7 +7,7 @@ const {
 
 const endpoint = 'https://harth-upload-services.herokuapp.com'
 
-const UploadState = sst.daggy('UploadState') ({
+const UploadState = sst.taggy('UploadState') ({
     Inactive: 
         []
     ,Unconfirmed: 
