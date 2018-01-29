@@ -256,8 +256,7 @@ function App(){
                                     uploadState.case == 'Inactive'
                                     ? ''
                                     : `url(${uploadState.value.preview})`
-                                        +` no-repeat center center`
-                                ,backgroundSize: 'cover'
+                                        +` no-repeat center center / cover`
                                 ,cursor: 'pointer'
                             }
                             ,className
