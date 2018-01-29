@@ -85,8 +85,8 @@ function App(){
             .map( k => [k, policyResponse.fields[k] ] )
             .concat(
                 [['key', uploadState.value.file.name]
-                ,['Content-Type', uploadState.value.file.type]
-                ,['file', 'text/html']
+                ,['Content-Type', 'text/html']// uploadState.value.file.type]
+                ,['file', uploadState.value.file]
                 ]
             )
             .forEach(
