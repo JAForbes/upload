@@ -154,6 +154,8 @@ function App(){
                                     })
                                 )
                             }
+                            
+                            m.redraw()
                         }
 
                         setTimeout(poller, 500)
