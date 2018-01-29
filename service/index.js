@@ -1,4 +1,3 @@
-/* globals Promise */
 /* eslint-disable fp/no-mutation, fp/no-throw */
 
 const { json } = require('micro')
