@@ -2,61 +2,12 @@ const {
     m
     , URL
     , FormData
+    , sst
 } = window // eslint-disable-line no-undef
 
 const endpoint = 'https://harth-upload-services.herokuapp.com'
 
-const DefineSumType = o => 
-    Object.keys(o)
-        .map( k => [k, o[k]] )
-        .reduce(
-            (p, [ k, ks ]) => {
-
-                const of = value => {
-
-                    const badValue =
-                        ks.length > 0
-                        && (
-                            value == null
-                            || typeof value != 'object'
-                        )
-
-                    if ( badValue ){
-                        throw new TypeError(
-                            k +' expects {'+ks.join(', ')+'} but received: ' 
-                                + value
-                        )
-                    }
-
-                    const missingValues = 
-                        ks.filter(
-                            k => !(k in value)
-                        )
-
-                    if( missingValues.length ){
-                        throw new TypeError(
-                            k + ' is missing expected values: '
-                                + missingValues.join(',')
-                        )
-                    }
-
-                    return { 
-                        case: k
-                        , value
-                    }
-                }
-
-                p[k] = of
-
-                return p
-            }
-            ,{
-                cata: cases => o => 
-                    cases[o.case]( o.value )
-            }
-        )
-
-const UploadState = DefineSumType({
+const UploadState = sst.daggy('UploadState') ({
     Inactive: 
         []
     ,Unconfirmed: 
@@ -74,7 +25,7 @@ const UploadState = DefineSumType({
 })
 
 // UploadState -> Boolean
-const buttonDisabled = UploadState.cata({
+const buttonDisabled = sst.fold (UploadState) ({
   Inactive: () => true
   ,Unconfirmed: () => false
   ,Processing: () => true
@@ -85,7 +36,7 @@ const buttonDisabled = UploadState.cata({
 })
 
 // UploadState -> HyperScript
-const uploadStatusMessage = UploadState.cata({
+const uploadStatusMessage = sst.fold (UploadState) ({
   Inactive: () => 'Waiting for file input.'
   ,Unconfirmed: () => 'Upload when ready.'
   ,Processing: () => 'File is being processed'
@@ -95,10 +46,8 @@ const uploadStatusMessage = UploadState.cata({
   ,Signing: () => 'Signing ...'
 })
   
-
-
 // UploadState -> HyperScript
-const buttonText = UploadState.cata({
+const buttonText = sst.fold(UploadState) ({
   Inactive: () => 'Upload'
   ,Unconfirmed: () => 'Upload'
   ,Processing: () => 'Upload'
