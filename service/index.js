@@ -18,7 +18,7 @@ const getPolicy = ({ filename, filetype }) => policyGen({
     ,policy:
         { expiration: Date.now() + 60 * 1000 * 5
         , conditions: 
-            [ ["starts-with", "$key", ""]
+            [ ["starts-with", "$key", filename]
             // , ["starts-with", "$Content-Type", ""]
             , ["content-length-range", 0, 5 * 1024 * 1024 ] 
             , {"acl": "private"}
