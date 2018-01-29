@@ -86,7 +86,7 @@ function App(){
             .concat(
                 [['file', uploadState.value.file]
                 ,['key', uploadState.value.file.name]
-                ,['content-type', uploadState.value.file.type]
+                // ,['content-type', uploadState.value.file.type]
                 ]
             )
             .forEach(
