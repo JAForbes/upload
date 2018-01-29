@@ -82,13 +82,16 @@ function App(){
 
         Object.keys(policyResponse.fields)
             .filter( k => k.toLowerCase() == k )
-            .forEach(
-                k => fd.append(k, policyResponse.fields[k])
+            .map( k => [k, policyResponse.fields[k] ] )
+            .concat(
+                [['file', uploadState.value.file]
+                ,['key', uploadState.value.file.name]
+                ,['content-type', uploadState.value.file.type]
+                ]
             )
-
-        fd.set('file', uploadState.value.file)
-        fd.set('key', uploadState.value.file.name)
-        fd.set('content-type', uploadState.value.file.type)
+            .forEach(
+                ([k,v]) => fd.set(k, v)
+            )
         
         await m.request({
             url: policyResponse.host.replace('.dualstack','')
