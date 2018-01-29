@@ -57,8 +57,14 @@ const buttonText = sst.fold(UploadState) ({
   ,Signing: () => 'Upload'
 })
 
+const closureAdapter = function(f){
+    return {
+        controller: f
+        ,view: x => x.view()
+    }
+}
+
 function App(){
-  
   
   let uploadState = 
     UploadState.Inactive()
@@ -277,4 +283,4 @@ function App(){
   }
 }
 
-m.mount( document.body, App ) // eslint-disable-line no-undef
+m.mount( document.body, closureAdapter(App) ) // eslint-disable-line no-undef
