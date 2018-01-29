@@ -84,8 +84,8 @@ function App(){
             .filter( k => k.toLowerCase() == k )
             .map( k => [k, policyResponse.fields[k] ] )
             .concat(
-                [['file', uploadState.value.file]
-                ,['key', uploadState.value.file.name]
+                [['key', uploadState.value.file.name]
+                ,['file', uploadState.value.file]
                 // ,['content-type', uploadState.value.file.type]
                 ]
             )
