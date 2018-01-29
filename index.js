@@ -103,6 +103,7 @@ function App(){
             url: policyResponse.host.replace('.dualstack','')
             ,method: 'POST'
             ,data: fd
+            ,serialize: i => i
             ,config(xhr){
                 xhr.upload.addEventListener(
                     'progress'
